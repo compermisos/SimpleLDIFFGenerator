@@ -4,7 +4,7 @@ require_once("pwgen.php");
 $users = array();
 //apellidos,nombre,correo,curp,telefono,direccion
 #get base DN
-$dn= NULL;
+$dn= "ou=alumnos,dc=openintelligence,dc=mx";
 #get route to csv
 $file = "csv/sample.csv";
 #parse CSV
@@ -16,7 +16,7 @@ fclose($handle);
 
 $pwgen = new PWGen();
 $outpotFile = fopen("data.ldiff", "w");
-$outpotRFile = fopen("data.dreport", "w");
+$outpotRFile = fopen("data.report", "w");
 #pull ldiff template
 $outpot = NULL;
 $outpotR = NULL;
