@@ -31,14 +31,14 @@ foreach ($users as $user){
 	$template->set("phone", $user["phone"]);
 	$template->set("address", $user["address"]);
 	$template->set("dommain", $dn);
-	$fullName = capitalize($user["name"]. " " . $user["lastName"]);
+	$fullName = capitalize(trim($user["name"]). " " . trim($user["lastName"]));
 	$template->set("fullName", $fullName);
 	$gecos = dees(strtolower(trim($fullName)));
 	$template->set("gecos", $gecos);
 	$cleanName = dearticle(strtolower(trim($user["name"])));
 	$cleanLastName = dearticle(strtolower(trim($user["lastName"])));
 	$lastNames = explode(" ", $cleanLastName);
-	$uid = substr($cleanName, 0, 1) . $lastNames[0];
+	$uid = dees(substr($cleanName, 0, 1) . $lastNames[0]);
 	$template->set("uid", $uid);
 	$names = explode(" ", $cleanName);
 	$inittials = NULL;
@@ -54,6 +54,15 @@ foreach ($users as $user){
 	$report->set("uid", $uid);
 	$report->set("password", $password);	
 	$report->set("email", $user["email"]);
+	if(in_array($uid,$uids)){
+		if(!$names[1] == NULL){
+			$uid = dees(substr($names[0], 0, 1) . substr($names[1], 0, 1) . $lastNames[0]);
+		}else{
+			$uid = dees(substr($cleanName, 0, 2) . $lastNames[0]);
+		}
+	$template->set("uid", $uid);
+	}
+	$uids[]=$uid;
 	$outpot .= $template->output();
 	$outpot .= "\n";
 	$outpotR .= $report->output();
