@@ -8,44 +8,61 @@ $dn= NULL;
 #get route to csv
 $file = "csv/sample.csv";
 #parse CSV
-if (($handle = fopen("test.csv", "r")) !== FALSE) {
-	while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-		$users[] = array("lastName" => $data[0], "name" => $data[1], "email" => $data[2], "curp" => $data[3], "phone" => $data[4], "addres" => $data[5]);
-	}
-	fclose($handle);
+$handle = fopen($file, "r");
+while ($data = fgetcsv($handle, 1000, ",")) {
+	$users[] = array("lastName" => $data[0], "name" => $data[1], "email" => $data[2], "curp" => $data[3], "phone" => $data[4], "addres" => $data[5]);
 }
+fclose($handle);
 
 $pwgen = new PWGen();
-$outpot = fopen("test.csv", "w");
+$outpotFile = fopen("data.ldiff", "w");
+$outpotRFile = fopen("data.dreport", "w");
 #pull ldiff template
-$template = new coSimpleTemplate("template.ldiff");
-$template->set("password", $pwgen->generate());
-$template->set("name", capitalize($user["name"]));
-$template->set("lastName", capitalize($user["lastName"]));
-$template->set("email", $user["email"]);
-$template->set("lastName", $user["email"]);
-$template->set("phone", $user["phone"]);
-$template->set("address", $user["address"]);
-$template->set("dommain", $dn);
-$fullname = capitalize($user["name"]. " " . $user["lastName"])
-$template->set("fullname", $fullname);
-$gecos = dees(strtolower(trim($fullname)));
-$template->set("gecos", $gecos);
-$cleanName = dearticle(strtolower(trim($user["name"])));
-$cleanLastName = dearticle(strtolower(trim($user["lastName"])));
-$lastNames = explode(" ", $cleanLastName);
-$uid = substr($cleanName, 0, 1) . $lastaNames[0];
-$names = explode(" ", $cleanName);
-$inittials = NULL;
-foreach ($names as $sname){
-	$inittials .= substr($snamee, 0, 1);
+$outpot = NULL;
+$outpotR = NULL;
+foreach ($users as $user){
+	$template = new coSimpleTemplate("template.ldiff");
+	$report = new coSimpleTemplate("template.report");
+	$password = $pwgen->generate();
+	$template->set("password", $password);	
+	$template->set("name", capitalize($user["name"]));
+	$template->set("lastName", capitalize($user["lastName"]));
+	$template->set("email", $user["email"]);
+	$template->set("phone", $user["phone"]);
+	$template->set("address", $user["address"]);
+	$template->set("dommain", $dn);
+	$fullName = capitalize($user["name"]. " " . $user["lastName"]);
+	$template->set("fullName", $fullName);
+	$gecos = dees(strtolower(trim($fullName)));
+	$template->set("gecos", $gecos);
+	$cleanName = dearticle(strtolower(trim($user["name"])));
+	$cleanLastName = dearticle(strtolower(trim($user["lastName"])));
+	$lastNames = explode(" ", $cleanLastName);
+	$uid = substr($cleanName, 0, 1) . $lastNames[0];
+	$template->set("uid", $uid);
+	$names = explode(" ", $cleanName);
+	$inittials = NULL;
+	foreach ($names as $sname){
+		$inittials .= substr($sname, 0, 1);
+	}
+	foreach ($lastNames as $slastName){
+		$inittials .= substr($slastName, 0, 1);
+	}
+	$template->set("inittials", $inittials);
+	#[@organization]
+	$report->set("fullName", $fullName);
+	$report->set("uid", $uid);
+	$report->set("password", $password);	
+	$report->set("email", $user["email"]);
+	$outpot .= $template->output();
+	$outpot .= "\n";
+	$outpotR .= $report->output();
+	$outpotR .= "\n";
 }
-foreach ($lastNames as $slastName){
-	$inittials .= substr($slastName, 0, 1);
-}
-#[@organization]
-print $template->output();
-
+fwrite($outpotFile, $outpot);
+fclose($outpotFile);
+fwrite($outpotRFile, $outpotR);
+fclose($outpotRFile);
 #pussh data to template.
 
 #push dato to file
@@ -64,7 +81,7 @@ function dearticle($text){
 	$return =trim(str_replace($search," ",$text));
 	return $return;
 }
-function capitalize(text){
+function capitalize($text){
 	$return = ucwords(strtolower(trim($text)));
 	return $return;
 }
