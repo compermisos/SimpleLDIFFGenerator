@@ -1,0 +1,30 @@
+dn: uid=[@uid],[@dommain]
+objectClass: inetOrgPerson
+objectClass: posixAccount
+objectClass: shadowAccount
+uid: [@uid]
+sn: [@lastName]
+givenName: [@name]
+cn: [@fullName]
+displayName: [@fullName]
+uidNumber: 
+gidNumber: 
+userPassword: [@password]
+gecos: [@gecos]
+loginShell: /bin/bash
+homeDirectory: /dev/null
+shadowExpire: -1
+shadowFlag: 0
+shadowWarning: 7
+shadowMin: 8
+shadowMax: 999999
+shadowLastChange: 10877
+mail: [@email]
+postalCode: 09690
+l: Distrito Federal
+o: [@organization]
+mobile: [@phone]
+homePhone: +52 (0)5 xx xx xx xx
+title: Estudiante
+postalAddress: [@address]
+initials: [@inittials]
