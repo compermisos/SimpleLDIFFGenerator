@@ -10,7 +10,14 @@ $file = "csv/sample.csv";
 #parse CSV
 $handle = fopen($file, "r");
 while ($data = fgetcsv($handle, 1000, ",")) {
-	$users[] = array("lastName" => $data[0], "name" => $data[1], "email" => $data[2], "curp" => $data[3], "phone" => $data[4], "addres" => $data[5]);
+	$users[] = array(
+		"lastName" => cleaninput($data[0]),
+		"name" => cleaninput($data[1]),
+		"email" => cleaninput($data[2]),
+		"curp" => cleaninput($data[3]),
+		"phone" => cleaninput($data[4]),
+		"addres" => cleaninput($data[5]),
+	);
 }
 fclose($handle);
 
@@ -21,25 +28,13 @@ $outpotRFile = fopen("data.report", "w");
 $outpot = NULL;
 $outpotR = NULL;
 foreach ($users as $user){
-	$template = new coSimpleTemplate("template.ldiff");
-	$report = new coSimpleTemplate("template.report");
 	$password = $pwgen->generate();
-	$template->set("password", $password);	
-	$template->set("name", capitalize($user["name"]));
-	$template->set("lastName", capitalize($user["lastName"]));
-	$template->set("email", $user["email"]);
-	$template->set("phone", $user["phone"]);
-	$template->set("address", $user["address"]);
-	$template->set("dommain", $dn);
-	$fullName = capitalize(trim($user["name"]). " " . trim($user["lastName"]));
-	$template->set("fullName", $fullName);
-	$gecos = dees(strtolower(trim($fullName)));
+	$fullName = trim(capitalize($user["name"]. " " . $user["lastName"]));
+	$gecos = dees(strtolower($fullName));
 	$template->set("gecos", $gecos);
-	$cleanName = dearticle(strtolower(trim($user["name"])));
-	$cleanLastName = dearticle(strtolower(trim($user["lastName"])));
+	$cleanName = dearticle(strtolower($user["name"]));
+	$cleanLastName = dearticle(strtolower($user["lastName"]));
 	$lastNames = explode(" ", $cleanLastName);
-	$uid = dees(substr($cleanName, 0, 1) . $lastNames[0]);
-	$template->set("uid", $uid);
 	$names = explode(" ", $cleanName);
 	$inittials = NULL;
 	foreach ($names as $sname){
@@ -48,20 +43,34 @@ foreach ($users as $user){
 	foreach ($lastNames as $slastName){
 		$inittials .= substr($slastName, 0, 1);
 	}
-	$template->set("inittials", $inittials);
-	#[@organization]
-	$report->set("fullName", $fullName);
-	$report->set("uid", $uid);
-	$report->set("password", $password);	
-	$report->set("email", $user["email"]);
+	$uid = dees(substr($cleanName, 0, 1) . $lastNames[0]);
 	if(in_array($uid,$uids)){
 		if(!$names[1] == NULL){
 			$uid = dees(substr($names[0], 0, 1) . substr($names[1], 0, 1) . $lastNames[0]);
 		}else{
 			$uid = dees(substr($cleanName, 0, 2) . $lastNames[0]);
 		}
-	$template->set("uid", $uid);
 	}
+
+	$template = new coSimpleTemplate("template.ldiff");
+	$report = new coSimpleTemplate("template.report");
+	
+	$template->set("password", $password);	
+	$template->set("name", capitalize($user["name"]));
+	$template->set("lastName", capitalize($user["lastName"]));
+	$template->set("email", $user["email"]);
+	$template->set("phone", $user["phone"]);
+	$template->set("address", $user["address"]);
+	$template->set("dommain", $dn);
+	$template->set("fullName", $fullName);
+	$template->set("uid", $uid);
+	$template->set("inittials", $inittials);
+	#[@organization]
+	$report->set("fullName", $fullName);
+	$report->set("uid", $uid);
+	$report->set("password", $password);	
+	$report->set("email", $user["email"]);
+	
 	$uids[]=$uid;
 	$outpot .= $template->output();
 	$outpot .= "\n";
@@ -94,4 +103,9 @@ function capitalize($text){
 	$return = ucwords(strtolower(trim($text)));
 	return $return;
 }
+function cleaninput($text){
+	$return =strtolower(trim($text));
+	return $return;
+}
+
 
