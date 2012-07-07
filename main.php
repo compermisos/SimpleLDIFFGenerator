@@ -10,7 +10,12 @@ $file = "csv/sample.csv";
 #parse CSV
 $handle = fopen($file, "r");
 while ($data = fgetcsv($handle, 1000, ",")){
-	$users[] = @array(
+	for($i = 0; $i++; $i < 6){
+		if(!isset($data[$i])){
+			$data[$i] = NULL;
+		}
+	}
+	$users[] = array(
 		"lastName" => cleaninput($data[0]),
 		"name" => cleaninput($data[1]),
 		"email" => cleaninput($data[2]),
