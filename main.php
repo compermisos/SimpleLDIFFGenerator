@@ -9,8 +9,8 @@ $dn= "ou=alumnos,dc=openintelligence,dc=mx";
 $file = "csv/sample.csv";
 #parse CSV
 $handle = fopen($file, "r");
-while ($data = fgetcsv($handle, 1000, ",")) {
-	$users[] = array(
+while ($data = fgetcsv($handle, 1000, ",")){
+	$users[] = @array(
 		"lastName" => cleaninput($data[0]),
 		"name" => cleaninput($data[1]),
 		"email" => cleaninput($data[2]),
@@ -27,11 +27,11 @@ $outpotRFile = fopen("data.report", "w");
 #pull ldiff template
 $outpot = NULL;
 $outpotR = NULL;
+$uids = array();
 foreach ($users as $user){
 	$password = $pwgen->generate();
 	$fullName = trim(capitalize($user["name"]. " " . $user["lastName"]));
 	$gecos = dees(strtolower($fullName));
-	$template->set("gecos", $gecos);
 	$cleanName = dearticle(strtolower($user["name"]));
 	$cleanLastName = dearticle(strtolower($user["lastName"]));
 	$lastNames = explode(" ", $cleanLastName);
@@ -45,7 +45,7 @@ foreach ($users as $user){
 	}
 	$uid = dees(substr($cleanName, 0, 1) . $lastNames[0]);
 	if(in_array($uid,$uids)){
-		if(!$names[1] == NULL){
+		if(@!$names[1] == NULL){
 			$uid = dees(substr($names[0], 0, 1) . substr($names[1], 0, 1) . $lastNames[0]);
 		}else{
 			$uid = dees(substr($cleanName, 0, 2) . $lastNames[0]);
@@ -58,13 +58,14 @@ foreach ($users as $user){
 	$template->set("password", $password);	
 	$template->set("name", capitalize($user["name"]));
 	$template->set("lastName", capitalize($user["lastName"]));
-	$template->set("email", $user["email"]);
-	$template->set("phone", $user["phone"]);
-	$template->set("address", $user["address"]);
-	$template->set("dommain", $dn);
-	$template->set("fullName", $fullName);
-	$template->set("uid", $uid);
-	$template->set("inittials", $inittials);
+	@$template->set("email", $user["email"]);
+	@$template->set("phone", $user["phone"]);
+	@$template->set("address", $user["address"]);
+	@$template->set("dommain", $dn);
+	@$template->set("fullName", $fullName);
+	@$template->set("uid", $uid);
+	@$template->set("inittials", $inittials);
+	$template->set("gecos", $gecos);+
 	#[@organization]
 	$report->set("fullName", $fullName);
 	$report->set("uid", $uid);
