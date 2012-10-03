@@ -4,3 +4,4 @@ template.ldiff
 data.dreport
 data.report
 data.ldiff
+ldap_connection.php
