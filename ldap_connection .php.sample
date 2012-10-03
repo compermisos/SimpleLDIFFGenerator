@@ -1,0 +1,18 @@
+<?php
+
+// LDAP variables
+$ldaphost = "ldap.softwaremx.org";  // your ldap servers
+$ldaphost = "softwaremx.org";
+#$ldaphost = "127.0.0.1";
+$ldapport = 389;                 // your ldap server's port number
+$dn = "dc=openintelligence,dc=mx";
+
+// Connecting to LDAP
+$ldapconn = ldap_connect($ldaphost, $ldapport) or die("Could not connect to $ldaphost");
+print_r($ldapconn);
+$ds = $ldapconn;
+
+// using ldap bind
+$ldaprdn  = 'cn=,dc=openintelligence,dc=mx';     // ldap rdn or dn
+$ldappass = '';  // associated password
+
