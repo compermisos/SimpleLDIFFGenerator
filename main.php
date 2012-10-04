@@ -1,6 +1,16 @@
 <?php
 require_once("coSimpleTemplate.php");
 require_once("pwgen.php");
+include("./ldap_connection.php");
+$uids = array();
+$person="";
+$filter="(|(sn=$person*)(givenname=$person*))";
+$justthese = array("uid");
+$sr=ldap_search($ds, $dn, $filter, $justthese);
+$info = ldap_get_entries($ds, $sr);
+foreach ($info as $user){
+	$uids[] = $user["uid"][0];
+}
 $users = array();
 //apellidos,nombre,correo,curp,telefono,direccion
 #get base DN
@@ -25,7 +35,6 @@ while ($data = fgetcsv($handle, 1000, ",")){
 	);
 }
 fclose($handle);
-
 $pwgen = new PWGen();
 $outpotFile = fopen("data.ldiff", "w");
 $outpotRFile = fopen("data.report", "w");
@@ -34,16 +43,7 @@ $outpotCFile = fopen("data.csv", "w");
 $outpot = NULL;
 $outpotR = NULL;
 $outpotC = NULL;
-$uids = array();
-include("./ldap_connection.php");
-$person="";
-$filter="(|(sn=$person*)(givenname=$person*))";
-$justthese = array("uid");
-$sr=ldap_search($ds, $dn, $filter, $justthese);
-$info = ldap_get_entries($ds, $sr);
-foreach ($info as $user){
-	$uids[] = $user["uid"][0];
-}
+
 foreach ($users as $user){
 	$password = $pwgen->generate();
 	$fullName = trim(capitalize($user["name"]. " " . $user["lastName"]));
@@ -73,8 +73,6 @@ foreach ($users as $user){
 		}else{
 			$uidControll = FALSE;
 		}
-		$tip++;
-		$tip2++;
 	}
 	$inittials = strtolower(dees($inittials));
 	$template = new coSimpleTemplate("template.ldiff");

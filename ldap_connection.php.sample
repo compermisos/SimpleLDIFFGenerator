@@ -11,7 +11,7 @@ $dn = "dc=openintelligence,dc=mx";
 $ldapconn = ldap_connect($ldaphost, $ldapport) or die("Could not connect to $ldaphost");
 print_r($ldapconn);
 $ds = $ldapconn;
-
+ldap_set_option($ds, LDAP_OPT_PROTOCOL_VERSION, 3);
 // using ldap bind
 $ldaprdn  = 'cn=,dc=openintelligence,dc=mx';     // ldap rdn or dn
 $ldappass = '';  // associated password
